@@ -1,6 +1,7 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 require('dotenv').config();
 
+// --- SERVEUR HTTP POUR KEEP-ALIVE RENDER ---
 const http = require('http');
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -9,7 +10,7 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Serveur d'écoute actif sur le port ${PORT}`));
 
-// Création de l'instance du bot avec les intents requis
+// --- INITIALISATION CLIENT DISCORD ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -22,15 +23,25 @@ const client = new Client({
 
 client.commands = new Collection();
 
-// Chargement de tes loaders depuis le dossier Loaders
+// --- CHARGEMENT DES LOADERS ---
 const loadCommands = require('./Loaders/loadCommands');
 const loadSlashCommands = require('./Loaders/loadSlashCommands');
 const loadEvents = require('./Loaders/loadEvents');
 
-// Exécution des loaders
 loadCommands(client);
 loadSlashCommands(client);
 loadEvents(client);
 
-// Connexion du bot Discord
-client.login(process.env.TOKEN);
+// --- ÉVÉNEMENT DE CONNEXION REUSSIE ---
+client.once('ready', () => {
+    console.log(`✅ Bot connecté avec succès en tant que ${client.user.tag} !`);
+});
+
+// --- CONNEXION SECURISEE DU BOT ---
+if (!process.env.TOKEN) {
+    console.error("❌ ERREUR: La variable d'environnement TOKEN n'est pas définie dans Render !");
+} else {
+    client.login(process.env.TOKEN).catch(err => {
+        console.error("❌ ERREUR DE CONNEXION DISCORD :", err);
+    });
+}
