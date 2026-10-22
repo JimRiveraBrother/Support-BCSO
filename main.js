@@ -32,12 +32,7 @@ loadCommands(client);
 loadSlashCommands(client);
 loadEvents(client);
 
-// --- ÉVÉNEMENT READY ---
-client.once('ready', () => {
-    console.log(`✅ Bot connecté avec succès en tant que ${client.user.tag} !`);
-});
-
-// --- CONNEXION UNIQUE ---
+// --- CONNEXION DISCORD ---
 if (!process.env.TOKEN) {
     console.error("❌ ERREUR: La variable d'environnement TOKEN n'est pas définie dans Render !");
 } else {
