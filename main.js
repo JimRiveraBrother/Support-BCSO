@@ -1,7 +1,7 @@
 const { Client, GatewayIntentBits, Collection } = require('discord.js');
 require('dotenv').config();
 
-// --- SERVEUR HTTP POUR KEEP-ALIVE RENDER ---
+// --- SERVEUR HTTP POUR RENDER ---
 const http = require('http');
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -10,7 +10,7 @@ const server = http.createServer((req, res) => {
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Serveur d'écoute actif sur le port ${PORT}`));
 
-// --- INITIALISATION CLIENT DISCORD ---
+// --- CLIENT DISCORD ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -23,7 +23,7 @@ const client = new Client({
 
 client.commands = new Collection();
 
-// --- CHARGEMENT DES LOADERS ---
+// --- LOADERS ---
 const loadCommands = require('./Loaders/loadCommands');
 const loadSlashCommands = require('./Loaders/loadSlashCommands');
 const loadEvents = require('./Loaders/loadEvents');
@@ -32,12 +32,12 @@ loadCommands(client);
 loadSlashCommands(client);
 loadEvents(client);
 
-// --- ÉVÉNEMENT DE CONNEXION REUSSIE ---
+// --- ÉVÉNEMENT READY ---
 client.once('ready', () => {
     console.log(`✅ Bot connecté avec succès en tant que ${client.user.tag} !`);
 });
 
-// --- CONNEXION SECURISEE DU BOT ---
+// --- CONNEXION UNIQUE ---
 if (!process.env.TOKEN) {
     console.error("❌ ERREUR: La variable d'environnement TOKEN n'est pas définie dans Render !");
 } else {
