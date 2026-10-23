@@ -82,8 +82,8 @@ if (!token) {
             console.log("✅ Connecté à Discord avec succès !");
         } catch (err) {
             console.error("❌ ERREUR LORS DU LOGIN DISCORD :", err);
-            console.log("🔄 Nouvelle tentative dans 15 secondes...");
-            setTimeout(connectBot, 15000);
+  console.log("🔄 Nouvelle tentative dans 5 minutes...");
+  setTimeout(connectBot, 5 * 60 * 1000);
         }
     };
 
