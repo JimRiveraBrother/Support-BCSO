@@ -50,7 +50,24 @@ const token = process.env.TOKEN ? process.env.TOKEN.trim() : null;
 client.on('debug', info => console.log('[DEBUG]', info));
 client.on('warn', info => console.warn('[WARN]', info));
 client.on('error', err => console.error('[CLIENT ERROR]', err));
+client.rest.on('rateLimited', info => console.warn('[RATELIMIT]', info));
+client.rest.on('invalidRequestWarning', info => console.warn('[INVALID REQ]', info));
 process.on('unhandledRejection', err => console.error('[UNHANDLED]', err));
+
+// Test direct de l'API Discord depuis Render
+(async () => {
+    try {
+        const res = await fetch('https://discord.com/api/v10/gateway', {
+            signal: AbortSignal.timeout(15000)
+        });
+        console.log('[TEST API] Status:', res.status);
+        console.log('[TEST API] Retry-After:', res.headers.get('retry-after'));
+        const body = await res.text();
+        console.log('[TEST API] Body:', body.slice(0, 200));
+    } catch (e) {
+        console.error('[TEST API] Échec :', e.name, e.message);
+    }
+})();
 
 if (!token) {
     console.error("❌ ERREUR CRITIQUE : Le TOKEN est introuvable !");
