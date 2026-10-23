@@ -39,18 +39,23 @@ try {
     console.error("[LOADER ERROR] Une erreur est survenue lors du chargement :", error);
 }
 
-// --- 4. CONNEXION DU BOT DISCORD ---
+// --- CONNEXION DISCORD AVEC AUTO-RETRY ---
 const token = process.env.TOKEN ? process.env.TOKEN.trim() : null;
 
 if (!token) {
-    console.error("❌ ERREUR CRITIQUE : Le TOKEN est introuvable ou vide dans les variables d'environnement !");
+    console.error("❌ ERREUR CRITIQUE : Le TOKEN est introuvable !");
 } else {
-    console.log("🔄 Tentative de connexion à l'API Discord en cours...");
-    client.login(token)
-        .then(() => {
-            console.log("✅ Connexion à Discord initialisée avec succès !");
-        })
-        .catch(err => {
-            console.error("❌ ERREUR CRITIQUE LORS DU LOGIN DISCORD :", err);
-        });
+    const connectBot = async () => {
+        console.log("🔄 Tentative de connexion à l'API Discord...");
+        try {
+            await client.login(token);
+            console.log("✅ Connecté à Discord avec succès !");
+        } catch (err) {
+            console.error("❌ ERREUR LORS DU LOGIN DISCORD :", err);
+            console.log("🔄 Nouvelle tentative dans 10 secondes...");
+            setTimeout(connectBot, 10000);
+        }
+    };
+
+    connectBot();
 }
