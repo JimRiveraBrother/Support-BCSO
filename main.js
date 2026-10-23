@@ -1,19 +1,19 @@
-const { Client, GatewayIntentBits, Collection } = require('discord.js');
+const { Client, GatewayIntentBits, Collection, Partials } = require('discord.js');
 require('dotenv').config();
 
-// --- 1. SERVEUR HTTP POUR RENDER (Garde le service Live 24/7) ---
+// --- 1. SERVEUR HTTP POUR RENDER (Port 10000 obligatoire) ---
 const http = require('http');
 const server = http.createServer((req, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.end('Bot BCSO actif 24/7');
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 server.listen(PORT, () => {
     console.log(`[HTTP] Serveur d'écoute actif sur le port ${PORT}`);
 });
 
-// --- 2. INITIALISATION DU CLIENT DISCORD & INTENTS ---
+// --- 2. INITIALISATION DU CLIENT DISCORD & OPTIONS RÉSEAU ---
 const client = new Client({
     intents: [
         GatewayIntentBits.Guilds,
@@ -21,7 +21,12 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMembers,
         GatewayIntentBits.GuildVoiceStates
-    ]
+    ],
+    partials: [Partials.Channel, Partials.Message, Partials.User, Partials.GuildMember],
+    restWsBridgeTimeout: 30000,
+    ws: {
+        compress: true
+    }
 });
 
 client.commands = new Collection();
@@ -52,8 +57,8 @@ if (!token) {
             console.log("✅ Connecté à Discord avec succès !");
         } catch (err) {
             console.error("❌ ERREUR LORS DU LOGIN DISCORD :", err);
-            console.log("🔄 Nouvelle tentative dans 10 secondes...");
-            setTimeout(connectBot, 10000);
+            console.log("🔄 Nouvelle tentative dans 15 secondes...");
+            setTimeout(connectBot, 15000);
         }
     };
 
